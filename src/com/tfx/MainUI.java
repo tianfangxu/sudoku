@@ -182,6 +182,10 @@ public class MainUI implements ToolWindowFactory, DumbAware {
             });
             area.add(button);
         }
+        SudokuMod sudokuMod = MyPersistentStateComponent.getInstance().getState();
+        if (sudokuMod != null && sudokuMod.getSudoku() != null) {
+            setVal(area);
+        }
     }
 
     private ActionListener getCreateSudokuPanel(JPanel area,JBLabel msg) {
