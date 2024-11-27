@@ -35,10 +35,6 @@ public class MyPersistentStateComponent implements PersistentStateComponent<Sudo
     }
 
     public static MyPersistentStateComponent getInstance() {
-        //return ApplicationManager.getApplication().getService(MyPersistentStateComponent.class);
-        if (component == null){
-            component = new MyPersistentStateComponent();
-        }
-        return component;
+        return ApplicationManager.getApplication().getService(MyPersistentStateComponent.class);
     }
 }
