@@ -1,16 +1,16 @@
 <idea-plugin>
   <id>com.tfx.sudoku</id>
   <name>sudoku</name>
-  <version>1.01</version>
+  <version>1.00</version>
   <vendor email="15755502377@163.com" url="15755502377@163.com">tianfangxu</vendor>
 
   <description><![CDATA[ 
-  sudoku learning Version.but Unable to define difficulty, will be updated in subsequent versions<br><em>
-  ips:If you have any questions, please feel free to contact us：15755502377@163.com)</em> ]]></description>
+  This is a Sudoku generator, you can play it. The content includes generating Sudoku, 
+  filling in the correct numbers, verifying the filled in numbers, and prompting you<br>
+  <em>ips:If you have any questions, please feel free to contact us：15755502377@163.com)</em> ]]></description>
 
   <change-notes><![CDATA[
-      v1.00 create project.<br>
-      v1.01 Removed some incompatible APIs and formatted/optimized code.<br>
+      v1.00 Create a random Sudoku with moderate difficulty. And it can mark the answers you are unsure about.<br>
     ]]>
   </change-notes>
 

@@ -13,6 +13,7 @@ import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.content.Content;
 import com.intellij.util.ui.JBUI;
 import com.tfx.mod.SudokuMod;
+import com.tfx.mod.TButton;
 import com.tfx.utils.SudokuUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -152,6 +153,8 @@ public class MainUI implements ToolWindowFactory, DumbAware {
                     String trueVal = String.valueOf(MyPersistentStateComponent.getInstance().getState().getResult()[i-1]);
                     if (button.getText() != null && button.getText().length() > 0 && !button.getText().equals(trueVal)){
                         button.setBackground(JBColor.RED);
+                    }else{
+                        button.setBackground(null);
                     }
                     button.setText(trueVal);
                 }
@@ -163,7 +166,7 @@ public class MainUI implements ToolWindowFactory, DumbAware {
         int x = 0;
         int y = 0;
         for (int i = 1; i <= 81; i++) {
-            JButton button = new JButton("");
+            TButton button = new TButton("");
             button.setLocation(x,y);
             button.setSize(38,38);
             if (i%9 == 0) {
@@ -226,7 +229,7 @@ public class MainUI implements ToolWindowFactory, DumbAware {
         }
     }
     
-    public JBPopup getJBPopupKeyboard(JButton textButton,int numIndex){
+    public JBPopup getJBPopupKeyboard(TButton textButton,int numIndex){
         // 创建数字键盘的面板
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(4, 3, 5, 5));
@@ -238,7 +241,13 @@ public class MainUI implements ToolWindowFactory, DumbAware {
             button.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    textButton.setText(String.valueOf(finalI));
+                    if (textButton.isMark()) {
+                        textButton.setText(htmlText(textButton.getText(),String.valueOf(finalI)));
+                    }else{
+                        textButton.setText(String.valueOf(finalI));
+                        textButton.setBackground(null);
+                        textButton.setFont(null);
+                    }
                 }
             });
             panel.add(button);
@@ -251,24 +260,47 @@ public class MainUI implements ToolWindowFactory, DumbAware {
             public void actionPerformed(ActionEvent e) {
                 if (MyPersistentStateComponent.getInstance().getState() != null && MyPersistentStateComponent.getInstance().getState().getResult() != null) {
                     textButton.setText(String.valueOf(MyPersistentStateComponent.getInstance().getState().getResult()[numIndex]));
+                    textButton.setBackground(null);
+                    textButton.setFont(null);
+                    textButton.setMark(false);
                 }
             }
         });
         panel.add(tips);
 
-        // 添加0按钮
-        JButton zeroButton = new JButton("0");
-        zeroButton.addActionListener(new ActionListener() {
+        // 添加清空按钮
+        JButton clear = new JButton("清空");
+        clear.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                textButton.setText("0");
+                textButton.setText("");
             }
         });
-        panel.add(zeroButton);
+        panel.add(clear);
 
-        // 添加关闭按钮
-        JButton closeButton = new JButton("关闭");
-        panel.add(closeButton);
+        // 添加标记按钮
+        String markText = textButton.isMark()?"取消标记":"标记";
+        JButton mark = new JButton(markText);
+        mark.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (textButton.isMark()){
+                    textButton.setBackground(null);
+                    textButton.setFont(null);
+                    textButton.setText("");
+                    textButton.setMark(false);
+                }else{
+                    Font font = new Font(null,0,10);
+                    textButton.setFont(font);
+                    textButton.setBackground(JBColor.YELLOW);
+                    textButton.setText(htmlText(textButton.getText(),null));
+                    textButton.setMark(true);
+                }
+                
+            }
+        });
+        
+        panel.add(mark);
         JBPopup numberKeyboard = JBPopupFactory.getInstance()
                 .createComponentPopupBuilder(panel, null)
                 .setTitle("数字键盘")
@@ -290,6 +322,20 @@ public class MainUI implements ToolWindowFactory, DumbAware {
                 numberKeyboard.dispose();
             }
         };
+    }
+    
+    public String htmlText(String text,String add){
+        String replace = "";
+        if (text != null && text.length() > 0) {
+            replace = text.replace("<html>", "").replace("</html>", "");
+        }
+        if (replace.length() == 4){
+            replace += "<br>";
+        }
+        if (add != null){
+            replace+=add;
+        }
+        return "<html>"+replace+"</html>";
     }
 
 }
