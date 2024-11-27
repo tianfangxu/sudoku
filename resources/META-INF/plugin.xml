@@ -1,0 +1,40 @@
+<idea-plugin>
+  <id>com.tfx.sudoku</id>
+  <name>sudoku</name>
+  <version>1.01</version>
+  <vendor email="15755502377@163.com" url="15755502377@163.com">tianfangxu</vendor>
+
+  <description><![CDATA[ 
+  sudoku learning Version.but Unable to define difficulty, will be updated in subsequent versions<br><em>
+  ips:If you have any questions, please feel free to contact us：15755502377@163.com)</em> ]]></description>
+
+  <change-notes><![CDATA[
+      v1.00 create project.<br>
+      v1.01 Removed some incompatible APIs and formatted/optimized code.<br>
+    ]]>
+  </change-notes>
+
+  <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+  <idea-version since-build="201.0"/>
+
+  <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+       on how to target different products -->
+  <depends>com.intellij.modules.platform</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <!-- Add your extensions here -->
+    <toolWindow id="Sudoku" factoryClass="com.tfx.MainUI"
+                canCloseContents="false"
+                anchor="right"/>
+  <!--  data persistent  -->
+    <applicationService serviceImplementation="com.tfx.MyPersistentStateComponent"/>
+  </extensions>
+
+  <actions>
+    <!-- Add your actions here -->
+    <action id="Sudoku" class="com.tfx.SudokuRun" text="Sudoku" description="Sudoku" >
+      <add-to-group group-id="WindowMenu" anchor="last"/>
+    </action>
+  </actions>
+
+</idea-plugin>
