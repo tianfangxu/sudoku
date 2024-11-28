@@ -10,7 +10,6 @@ import com.intellij.ui.JBColor;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBScrollPane;
-import com.intellij.ui.components.JBTextField;
 import com.intellij.ui.content.Content;
 import com.tfx.mod.SudokuMod;
 import com.tfx.mod.TButton;
@@ -31,6 +30,8 @@ public class MainUI implements ToolWindowFactory, DumbAware {
 
     private Project project;
     private JSlider jSlider;
+    
+    private volatile boolean falg = false;
 
     public static void main(String[] args) {
         JFrame jf = new JFrame("test");
@@ -85,13 +86,13 @@ public class MainUI implements ToolWindowFactory, DumbAware {
         area.setLocation(5,80);
         area.setSize(360,360);
         JBLabel msg = new JBLabel("正在加载中，请稍后....");
-        msg.setLocation(100,210);
+        msg.setLocation(120,150);
         area.add(msg);
         setAreas(area);
         setAuxiliaryLines(area);
 
         create.addActionListener(getCreateSudokuPanel(area,msg));
-        result.addActionListener(setResultSudoku(area));
+        result.addActionListener(setResultSudoku(area,msg));
 
         /* 添加 组件 到 内容面板 */
         panel.add(create);
@@ -126,7 +127,7 @@ public class MainUI implements ToolWindowFactory, DumbAware {
     }
 
     private void setAuxiliaryLines(JPanel area) {
-        JBColor jbColor = JBColor.BLUE;
+        JBColor jbColor = JBColor.GRAY;
         
         JPanel panel2 = new JPanel();
         panel2.setBorder(BorderFactory.createMatteBorder(0,2,2,2, jbColor));
@@ -151,7 +152,7 @@ public class MainUI implements ToolWindowFactory, DumbAware {
         area.add(panel8);
     }
 
-    private ActionListener setResultSudoku(JPanel area) {
+    private ActionListener setResultSudoku(JPanel area,JBLabel msg) {
         return new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -166,6 +167,9 @@ public class MainUI implements ToolWindowFactory, DumbAware {
                     button.setText(trueVal);
                 }
                 area.repaint();
+                msg.setForeground(JBColor.GREEN);
+                msg.setText("完美完成！！！");
+                msg.setSize(240,26);
             }
         };
     }
@@ -211,7 +215,14 @@ public class MainUI implements ToolWindowFactory, DumbAware {
         return new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (falg){
+                    System.out.println("not repeat click");
+                    return;
+                }
+                falg = true;
                 msg.setSize(240,26);
+                msg.setForeground(null);
+                msg.setText("正在加载中，请稍后....");
                 area.repaint();
                 new Thread(getSudokuRun(area,msg)).start();
             }
@@ -220,15 +231,19 @@ public class MainUI implements ToolWindowFactory, DumbAware {
     
     private Runnable getSudokuRun(JPanel area,JBLabel msg){
         return ()->{
-            SudokuMod sudokuMod = new SudokuMod();
-            int[] result = new int[81];
-            sudokuMod.setSudoku(SudokuUtil.create(result,40-this.jSlider.getValue()));
-            sudokuMod.setResult(result);
-            //SudokuUtil.printArr(result);
-            MyPersistentStateComponent.getInstance().loadState(sudokuMod);
-            setVal(area);
-            msg.setSize(0,0);
-            area.repaint();
+            try {
+                SudokuMod sudokuMod = new SudokuMod();
+                int[] result = new int[81];
+                sudokuMod.setSudoku(SudokuUtil.create(result,40-this.jSlider.getValue()));
+                sudokuMod.setResult(result);
+                //SudokuUtil.printArr(result);
+                MyPersistentStateComponent.getInstance().loadState(sudokuMod);
+                setVal(area);
+                msg.setSize(0,0);
+                area.repaint();
+            }finally {
+                falg = false;
+            }
         };
     }
     
