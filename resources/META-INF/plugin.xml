@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.tfx.sudoku</id>
-  <name>sudoku</name>
-  <version>1.00</version>
+  <name>Sudoku T</name>
+  <version>1.01</version>
   <vendor email="15755502377@163.com" url="15755502377@163.com">tianfangxu</vendor>
 
   <description><![CDATA[ 
@@ -11,6 +11,7 @@
 
   <change-notes><![CDATA[
       v1.00 Create a random Sudoku with moderate difficulty. And it can mark the answers you are unsure about.<br>
+      v1.01 Fixed initialized number, non adjustable<br>
     ]]>
   </change-notes>
 

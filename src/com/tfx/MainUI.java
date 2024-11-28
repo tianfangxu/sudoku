@@ -93,55 +93,28 @@ public class MainUI implements ToolWindowFactory, DumbAware {
     private void setAuxiliaryLines(JPanel area) {
         JBColor jbColor = JBColor.BLUE;
         
-        JPanel panel1 = new JPanel();
-        panel1.setBorder(BorderFactory.createMatteBorder(0,0,1,1,jbColor));
-        panel1.setLocation(0,0);
-        panel1.setSize(120,120);
-        area.add(panel1);
+        
         JPanel panel2 = new JPanel();
-        panel2.setBorder(BorderFactory.createMatteBorder(0,1,1,1, jbColor));
+        panel2.setBorder(BorderFactory.createMatteBorder(0,2,2,2, jbColor));
         panel2.setLocation(120,0);
-        panel2.setSize(120,120);
+        panel2.setSize(122,119);
         area.add(panel2);
-        JPanel panel3 = new JPanel();
-        panel3.setBorder(BorderFactory.createMatteBorder(0,1,1,0, jbColor));
-        panel3.setLocation(240,0);
-        panel3.setSize(120,120);
-        area.add(panel3);
 
         JPanel panel4 = new JPanel();
-        panel4.setBorder(BorderFactory.createMatteBorder(1,0,1,1, jbColor));
-        panel4.setLocation(0,120);
-        panel4.setSize(120,120);
+        panel4.setBorder(BorderFactory.createMatteBorder(2,0,2,2, jbColor));
+        panel4.setLocation(0,117);
+        panel4.setSize(122,122);
         area.add(panel4);
-        JPanel panel5 = new JPanel();
-        panel5.setBorder(BorderFactory.createMatteBorder(1,1,1,1, jbColor));
-        panel5.setLocation(120,120);
-        panel5.setSize(120,120);
-        area.add(panel5);
         JPanel panel6 = new JPanel();
-        panel6.setBorder(BorderFactory.createMatteBorder(1,1,1,0, jbColor));
-        panel6.setLocation(240,120);
-        panel6.setSize(120,120);
+        panel6.setBorder(BorderFactory.createMatteBorder(2,2,2,0, jbColor));
+        panel6.setLocation(240,117);
+        panel6.setSize(122,122);
         area.add(panel6);
-        
-        JPanel panel7 = new JPanel();
-        panel7.setBorder(BorderFactory.createMatteBorder(1,0,0,1, jbColor));
-        panel7.setLocation(0,240);
-        panel7.setSize(120,120);
-        area.add(panel7);
         JPanel panel8 = new JPanel();
-        panel8.setBorder(BorderFactory.createMatteBorder(1,1,0,1, jbColor));
-        panel8.setLocation(120,240);
-        panel8.setSize(120,120);
+        panel8.setBorder(BorderFactory.createMatteBorder(2,2,0,2, jbColor));
+        panel8.setLocation(120,237);
+        panel8.setSize(122,122);
         area.add(panel8);
-        JPanel panel9 = new JPanel();
-        panel9.setBorder(BorderFactory.createMatteBorder(1,1,0,0, jbColor));
-        panel9.setLocation(240,240);
-        panel9.setSize(120,120);
-        area.add(panel9);
-
-        area.setBorder(JBUI.Borders.customLine(jbColor,1,1,1,1));
     }
 
     private ActionListener setResultSudoku(JPanel area) {
@@ -158,22 +131,31 @@ public class MainUI implements ToolWindowFactory, DumbAware {
                     }
                     button.setText(trueVal);
                 }
+                area.repaint();
             }
         };
     }
 
     private void setAreas(JPanel area) {
-        int x = 0;
+        int x = 3;
         int y = 0;
         for (int i = 1; i <= 81; i++) {
             TButton button = new TButton("");
             button.setLocation(x,y);
             button.setSize(38,38);
             if (i%9 == 0) {
-                x = 0;y+=40;
+                x = 0;y+=39;
             }else{
-                x += 40;
+                x += 39;
             }
+            
+            if (i%3 == 0){
+                x+=3;
+            }
+            if (i%27 == 0){
+                y+=3;
+            }
+            
             int numIndex = i-1;
             button.addActionListener(new ActionListener() {
                 @Override
@@ -208,7 +190,7 @@ public class MainUI implements ToolWindowFactory, DumbAware {
             int[] result = new int[81];
             sudokuMod.setSudoku(SudokuUtil.create(result));
             sudokuMod.setResult(result);
-            SudokuUtil.printArr(result);
+            //SudokuUtil.printArr(result);
             MyPersistentStateComponent.getInstance().loadState(sudokuMod);
             setVal(area);
             msg.setSize(0,0);
@@ -222,10 +204,12 @@ public class MainUI implements ToolWindowFactory, DumbAware {
             JButton component = (JButton)area.getComponent(i);
             component.setText("");
             component.setBackground(null);
+            component.setEnabled(true);
             if (sudoku[i-1] == 0){
                 continue;
             }
             component.setText(String.valueOf(sudoku[i-1]));
+            component.setEnabled(false);
         }
     }
     
