@@ -10,8 +10,8 @@ import com.intellij.ui.JBColor;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBScrollPane;
+import com.intellij.ui.components.JBTextField;
 import com.intellij.ui.content.Content;
-import com.intellij.util.ui.JBUI;
 import com.tfx.mod.SudokuMod;
 import com.tfx.mod.TButton;
 import com.tfx.utils.SudokuUtil;
@@ -21,6 +21,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Hashtable;
 
 /**
  * @author tianfx
@@ -29,6 +30,7 @@ import java.awt.event.ActionListener;
 public class MainUI implements ToolWindowFactory, DumbAware {
 
     private Project project;
+    private JSlider jSlider;
 
     public static void main(String[] args) {
         JFrame jf = new JFrame("test");
@@ -68,11 +70,22 @@ public class MainUI implements ToolWindowFactory, DumbAware {
         result.setLocation(130,5);
         result.setSize(120,26);
 
+        JBLabel model = new JBLabel("模式：");
+        model.setLocation(10,36);
+        model.setSize(50,26);
+        JBLabel field1 = new JBLabel("seay");
+        field1.setLocation(60,36);
+        field1.setSize(32,26);
+        this.jSlider = getLevelPanel(92, 36);
+        JBLabel field2 = new JBLabel("hard");
+        field2.setLocation(252,36);
+        field2.setSize(32,26);
+
         JPanel area = new JBPanel(null);
-        area.setLocation(5,40);
+        area.setLocation(5,80);
         area.setSize(360,360);
         JBLabel msg = new JBLabel("正在加载中，请稍后....");
-        msg.setLocation(100,150);
+        msg.setLocation(100,210);
         area.add(msg);
         setAreas(area);
         setAuxiliaryLines(area);
@@ -84,15 +97,36 @@ public class MainUI implements ToolWindowFactory, DumbAware {
         panel.add(create);
         panel.add(result);
         panel.add(area);
+        panel.add(model);
+        panel.add(jSlider);
+        panel.add(field1);
+        panel.add(field2);
 
         // 创建一个JScrollPane，并将JPanel作为参数传入
 
         return new JBScrollPane(panel);
     }
+    
+    public JSlider getLevelPanel(int x,int y){
+        JSlider jSlider = new JSlider(JSlider.HORIZONTAL, 0, 20, 10);
+        jSlider.setLocation(x,y);
+        jSlider.setSize(160,26);
+        //jSlider.setPaintTicks(true);
+        jSlider.setMajorTickSpacing(2);
+        //jSlider.setPaintLabels(true);
+        jSlider.setSnapToTicks(true);
+        Hashtable<Integer, Component> labelTable = new Hashtable<Integer, Component>();
+        labelTable.put(0, new JLabel("简单"));
+        labelTable.put(5, new JLabel("一般"));
+        labelTable.put(10, new JLabel("中等"));
+        labelTable.put(15, new JLabel("较难"));
+        labelTable.put(20, new JLabel("困难"));
+        //jSlider.setLabelTable(labelTable);
+        return jSlider;
+    }
 
     private void setAuxiliaryLines(JPanel area) {
         JBColor jbColor = JBColor.BLUE;
-        
         
         JPanel panel2 = new JPanel();
         panel2.setBorder(BorderFactory.createMatteBorder(0,2,2,2, jbColor));
@@ -188,7 +222,7 @@ public class MainUI implements ToolWindowFactory, DumbAware {
         return ()->{
             SudokuMod sudokuMod = new SudokuMod();
             int[] result = new int[81];
-            sudokuMod.setSudoku(SudokuUtil.create(result));
+            sudokuMod.setSudoku(SudokuUtil.create(result,40-this.jSlider.getValue()));
             sudokuMod.setResult(result);
             //SudokuUtil.printArr(result);
             MyPersistentStateComponent.getInstance().loadState(sudokuMod);

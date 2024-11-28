@@ -10,10 +10,10 @@ import java.util.List;
  */
 public class SudokuUtil {
     
-    public static int[] create(int[] result){
+    public static int[] create(int[] result,int level){
         int[][] crate = null;
         while (true){
-            crate = crateCommon();
+            crate = crateCommon(level);
             if (crate == null){
                 continue;
             }
@@ -39,9 +39,9 @@ public class SudokuUtil {
         return target;
     }
 
-    public static int[][] crateCommon(){
+    public static int[][] crateCommon(int level){
         int[][] target = new int[9][9];
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < level; i++) {
             int x = (int) (Math.random() * 81);
             int r = x / 9;
             int c = x % 9;
@@ -149,7 +149,7 @@ public class SudokuUtil {
 
     public static void main(String[] args) {
         int[] result = new int[81];
-        int[] ints = SudokuUtil.create(result);
+        int[] ints = SudokuUtil.create(result,20);
         printArr(ints);
         printArr(result);
     }
