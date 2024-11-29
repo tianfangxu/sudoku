@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.tfx.sudoku</id>
   <name>Sudoku T</name>
-  <version>1.02</version>
+  <version>1.03</version>
   <vendor email="15755502377@163.com" url="15755502377@163.com">tianfangxu</vendor>
 
   <description><![CDATA[ 
