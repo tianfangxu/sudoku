@@ -2,6 +2,7 @@ package com.tfx;
 
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.popup.IconButton;
 import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.wm.ToolWindow;
@@ -20,7 +21,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 /**
  * @author tianfx
@@ -30,6 +33,7 @@ public class MainUI implements ToolWindowFactory, DumbAware {
 
     private Project project;
     private JSlider jSlider;
+    private JPanel area;
     
     private volatile boolean falg = false;
 
@@ -63,15 +67,15 @@ public class MainUI implements ToolWindowFactory, DumbAware {
         JPanel panel = new JBPanel(null);
         panel.setPreferredSize(new Dimension(390,400));
 
-        JButton create = new JButton("重新生成");
+        JButton create = new JButton("Start");
         create.setLocation(5,5);
         create.setSize(120,26);
 
-        JButton result = new JButton("显示结果");
+        JButton result = new JButton("Check Result");
         result.setLocation(130,5);
         result.setSize(120,26);
 
-        JBLabel model = new JBLabel("模式：");
+        JBLabel model = new JBLabel("Level：");
         model.setLocation(10,36);
         model.setSize(50,26);
         JBLabel field1 = new JBLabel("seay");
@@ -82,11 +86,11 @@ public class MainUI implements ToolWindowFactory, DumbAware {
         field2.setLocation(252,36);
         field2.setSize(32,26);
 
-        JPanel area = new JBPanel(null);
+        area = new JBPanel(null);
         area.setLocation(5,80);
         area.setSize(360,360);
-        JBLabel msg = new JBLabel("正在加载中，请稍后....");
-        msg.setLocation(120,150);
+        JBLabel msg = new JBLabel("loading Please Wait....");
+        msg.setLocation(130,150);
         area.add(msg);
         setAreas(area);
         setAuxiliaryLines(area);
@@ -109,20 +113,11 @@ public class MainUI implements ToolWindowFactory, DumbAware {
     }
     
     public JSlider getLevelPanel(int x,int y){
-        JSlider jSlider = new JSlider(JSlider.HORIZONTAL, 0, 20, 10);
+        JSlider jSlider = new JSlider(JSlider.HORIZONTAL, 0, 20, 0);
         jSlider.setLocation(x,y);
         jSlider.setSize(160,26);
-        //jSlider.setPaintTicks(true);
         jSlider.setMajorTickSpacing(2);
-        //jSlider.setPaintLabels(true);
         jSlider.setSnapToTicks(true);
-        Hashtable<Integer, Component> labelTable = new Hashtable<Integer, Component>();
-        labelTable.put(0, new JLabel("简单"));
-        labelTable.put(5, new JLabel("一般"));
-        labelTable.put(10, new JLabel("中等"));
-        labelTable.put(15, new JLabel("较难"));
-        labelTable.put(20, new JLabel("困难"));
-        //jSlider.setLabelTable(labelTable);
         return jSlider;
     }
 
@@ -168,7 +163,7 @@ public class MainUI implements ToolWindowFactory, DumbAware {
                 }
                 area.repaint();
                 msg.setForeground(JBColor.GREEN);
-                msg.setText("完美完成！！！");
+                msg.setText("Perfect Completion！！！");
                 msg.setSize(240,26);
             }
         };
@@ -216,13 +211,12 @@ public class MainUI implements ToolWindowFactory, DumbAware {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (falg){
-                    System.out.println("not repeat click");
                     return;
                 }
                 falg = true;
                 msg.setSize(240,26);
                 msg.setForeground(null);
-                msg.setText("正在加载中，请稍后....");
+                msg.setText("loading Please Wait....");
                 area.repaint();
                 new Thread(getSudokuRun(area,msg)).start();
             }
@@ -233,10 +227,8 @@ public class MainUI implements ToolWindowFactory, DumbAware {
         return ()->{
             try {
                 SudokuMod sudokuMod = new SudokuMod();
-                int[] result = new int[81];
-                sudokuMod.setSudoku(SudokuUtil.create(result,40-this.jSlider.getValue()));
-                sudokuMod.setResult(result);
-                //SudokuUtil.printArr(result);
+                sudokuMod.setSudoku(SudokuUtil.create(40-this.jSlider.getValue()));
+                sudokuMod.setResult(SudokuUtil.getResult(SudokuUtil.transf(sudokuMod.getSudoku())));
                 MyPersistentStateComponent.getInstance().loadState(sudokuMod);
                 setVal(area);
                 msg.setSize(0,0);
@@ -262,16 +254,126 @@ public class MainUI implements ToolWindowFactory, DumbAware {
         }
     }
     
+    private int[] getVal(JPanel area){
+        int[] sudoku = new int[81];
+        for (int i = 1; i <= 81; i++) {
+            JButton component = (JButton)area.getComponent(i);
+            String text = component.getText();
+            if (text == null || text.length() != 1){
+                sudoku[i-1] = 0;
+            }else{
+                sudoku[i-1] = Integer.parseInt(text);
+            }
+        }
+        return sudoku;
+    }
+    
+    public int getIndex(JPanel area,TButton textButton){
+        for (int i = 1; i <= 81; i++) {
+            if (area.getComponent(i) == textButton) {
+                return i-1;
+            }
+        }
+        return 0;
+    }
+    
     public JBPopup getJBPopupKeyboard(TButton textButton,int numIndex){
         // 创建数字键盘的面板
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(4, 3, 5, 5));
 
+        List<JButton> nums = new ArrayList<>();
         // 创建数字按钮
         for (int i = 1; i <= 9; i++) {
             JButton button = new JButton(String.valueOf(i));
-            int finalI = i;
-            button.addActionListener(new ActionListener() {
+            panel.add(button);
+            nums.add(button);
+        }
+        
+        //添加提示按钮
+//        JButton tips = new JButton("answer");
+//        tips.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                if (MyPersistentStateComponent.getInstance().getState() != null && MyPersistentStateComponent.getInstance().getState().getResult() != null) {
+//                    textButton.setText(String.valueOf(MyPersistentStateComponent.getInstance().getState().getResult()[numIndex]));
+//                    textButton.setBackground(null);
+//                    textButton.setFont(null);
+//                    textButton.setMark(false);
+//                }
+//            }
+//        });
+//        panel.add(tips);
+
+        JButton tips = new JButton("tips");
+        tips.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (MyPersistentStateComponent.getInstance().getState() != null && MyPersistentStateComponent.getInstance().getState().getResult() != null) {
+                    int[] ints = getVal(area);
+                    int index = getIndex(area, textButton);
+                    List<Integer> vals = SudokuUtil.getVals(SudokuUtil.transf(ints), index / 9, index % 9);
+                    for (int i = 0; i < nums.size(); i++) {
+                        if (!vals.contains(i+1)){
+                            nums.get(i).setEnabled(false);
+                        }
+                    }
+                }
+            }
+        });
+        panel.add(tips);
+
+        // 添加清空按钮
+        JButton clear = new JButton("reset");
+        panel.add(clear);
+
+        // 添加标记按钮
+        String markText = textButton.isMark()?"unmark":"mark";
+        JButton mark = new JButton(markText);
+        mark.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (textButton.isMark()){
+                    textButton.setBackground(null);
+                    textButton.setFont(null);
+                    if (textButton.getText()==null || removeHtml(textButton.getText()).length() != 1){
+                        textButton.setText("");
+                    }
+                    textButton.setMark(false);
+                    mark.setText("mark");
+                }else{
+                    Font font = new Font(null,0,10);
+                    textButton.setFont(font);
+                    textButton.setBackground(JBColor.YELLOW);
+                    textButton.setText(htmlText(textButton.getText(),null));
+                    textButton.setMark(true);
+                    mark.setText("unmark");
+                }
+            }
+        });
+        panel.add(mark);
+        JBPopup numberKeyboard = JBPopupFactory.getInstance()
+                .createComponentPopupBuilder(panel, null)
+                .setTitle("numberKeyboard")
+                .setMovable(true)
+                .setResizable(false)
+                .setLocateByContent(true)
+                .createPopup();
+
+        clear.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                textButton.setBackground(null);
+                textButton.setFont(null);
+                textButton.setText("");
+                textButton.setMark(false);
+                mark.setText("mark");
+            }
+        });
+
+        for (int i = 0; i < nums.size(); i++) {
+            int finalI = i+1;
+            nums.get(i).addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     if (textButton.isMark()) {
@@ -280,88 +382,17 @@ public class MainUI implements ToolWindowFactory, DumbAware {
                         textButton.setText(String.valueOf(finalI));
                         textButton.setBackground(null);
                         textButton.setFont(null);
+                        numberKeyboard.dispose();
                     }
                 }
             });
-            panel.add(button);
         }
-        
-        //添加提示按钮
-        JButton tips = new JButton("提示");
-        tips.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (MyPersistentStateComponent.getInstance().getState() != null && MyPersistentStateComponent.getInstance().getState().getResult() != null) {
-                    textButton.setText(String.valueOf(MyPersistentStateComponent.getInstance().getState().getResult()[numIndex]));
-                    textButton.setBackground(null);
-                    textButton.setFont(null);
-                    textButton.setMark(false);
-                }
-            }
-        });
-        panel.add(tips);
 
-        // 添加清空按钮
-        JButton clear = new JButton("清空");
-        clear.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                textButton.setText("");
-            }
-        });
-        panel.add(clear);
-
-        // 添加标记按钮
-        String markText = textButton.isMark()?"取消标记":"标记";
-        JButton mark = new JButton(markText);
-        mark.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (textButton.isMark()){
-                    textButton.setBackground(null);
-                    textButton.setFont(null);
-                    textButton.setText("");
-                    textButton.setMark(false);
-                }else{
-                    Font font = new Font(null,0,10);
-                    textButton.setFont(font);
-                    textButton.setBackground(JBColor.YELLOW);
-                    textButton.setText(htmlText(textButton.getText(),null));
-                    textButton.setMark(true);
-                }
-                
-            }
-        });
-        
-        panel.add(mark);
-        JBPopup numberKeyboard = JBPopupFactory.getInstance()
-                .createComponentPopupBuilder(panel, null)
-                .setTitle("数字键盘")
-                .setMovable(true)
-                .setResizable(false)
-                .setLocateByContent(true)
-                .createPopup();
-
-        for (int i = 0; i < panel.getComponentCount(); i++) {
-            ((JButton)panel.getComponent(i)).addActionListener(closeNumberKeyboard(numberKeyboard));
-        }
         return numberKeyboard;
     }
     
-    public ActionListener closeNumberKeyboard(JBPopup numberKeyboard){
-        return new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                numberKeyboard.dispose();
-            }
-        };
-    }
-    
     public String htmlText(String text,String add){
-        String replace = "";
-        if (text != null && text.length() > 0) {
-            replace = text.replace("<html>", "").replace("</html>", "");
-        }
+        String replace = removeHtml(text);
         if (replace.length() == 4){
             replace += "<br>";
         }
@@ -369,6 +400,15 @@ public class MainUI implements ToolWindowFactory, DumbAware {
             replace+=add;
         }
         return "<html>"+replace+"</html>";
+    }
+
+    @NotNull
+    private String removeHtml(String text) {
+        String replace = "";
+        if (text != null && text.length() > 0) {
+            replace = text.replace("<html>", "").replace("</html>", "");
+        }
+        return replace;
     }
 
 }

@@ -10,8 +10,8 @@ import java.util.List;
  */
 public class SudokuUtil {
     
-    public static int[] create(int[] result,int level){
-        int[][] crate = null;
+    public static int[] create(int level){
+        int[][] crate;
         while (true){
             crate = crateCommon(level);
             if (crate == null){
@@ -20,23 +20,20 @@ public class SudokuUtil {
             List<int[][]> source = new ArrayList<>();
             sudokuTest(crate,0,0,source);
             if (source.size()  == 1 ){
-                int c = 0;
-                for (int[] ints : source.get(0)) {
-                    for (int anInt : ints) {
-                        result[c++] = anInt;
-                    }
-                }
                 break;
             }
         }
-        int[] target = new int[81];
-        int c = 0;
-        for (int[] ints : crate) {
-            for (int anInt : ints) {
-                target[c++] = anInt;
-            }
+        return transf(crate);
+    }
+    
+    public static int[] getResult(int[][] source){
+        List<int[][]> results = new ArrayList<>();
+        sudokuTest(source,0,0,results);
+        if (results.size() == 0){
+            return null;
+        }else{
+            return transf(results.get(0));
         }
-        return target;
     }
 
     public static int[][] crateCommon(int level){
@@ -147,20 +144,38 @@ public class SudokuUtil {
         return elseVal;
     }
 
-    public static void main(String[] args) {
-        int[] result = new int[81];
-        int[] ints = SudokuUtil.create(result,20);
-        printArr(ints);
-        printArr(result);
-    }
-
-    public static void printArr(int[] target) {
-        for (int i = 1; i <= target.length; i++) {
-            System.out.print(""+ target[i-1]+" ");
-            if (i%9 == 0){
+    private static void printArr(int[][] target) {
+        for (int i = 0; i < target.length; i++) {
+            for (int i1 = 0; i1 < target[i].length; i1++) {
+                System.out.print(""+ target[i][i1]+" ");
+                if (i1==2||i1 == 5){
+                    System.out.print("  ");
+                }
+            }
+            if (i==2||i == 5){
                 System.out.println();
             }
+            System.out.println();
         }
         System.out.println("----------------------");
+    }
+    
+    public static int[][] transf(int[] source){
+        int[][] target = new int[9][9];
+        for (int i = 0; i < 81; i++) {
+            target[i/9][i%9] = source[i];
+        }
+        return target;
+    }
+    
+    public static int[] transf(int[][] source){
+        int[] target = new int[81];
+        int c = 0;
+        for (int[] ints : source) {
+            for (int i : ints) {
+                target[c++] = i;
+            }
+        }
+        return target;
     }
 }
