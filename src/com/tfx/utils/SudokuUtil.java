@@ -10,14 +10,14 @@ import java.util.List;
  */
 public class SudokuUtil {
     
-    public static int[] create(int level){
-        int[][] crate;
+    public static Integer[] create(int level){
+        Integer[][] crate;
         while (true){
             crate = crateCommon(level);
             if (crate == null){
                 continue;
             }
-            List<int[][]> source = new ArrayList<>();
+            List<Integer[][]> source = new ArrayList<>();
             sudokuTest(crate,0,0,source);
             if (source.size()  == 1 ){
                 break;
@@ -26,8 +26,8 @@ public class SudokuUtil {
         return transf(crate);
     }
     
-    public static int[] getResult(int[][] source){
-        List<int[][]> results = new ArrayList<>();
+    public static Integer[] getResult(Integer[][] source){
+        List<Integer[][]> results = new ArrayList<>();
         sudokuTest(source,0,0,results);
         if (results.size() == 0){
             return null;
@@ -36,8 +36,8 @@ public class SudokuUtil {
         }
     }
 
-    public static int[][] crateCommon(int level){
-        int[][] target = new int[9][9];
+    public static Integer[][] crateCommon(int level){
+        Integer[][] target = createEmpty99();
         for (int i = 0; i < level; i++) {
             int x = (int) (Math.random() * 81);
             int r = x / 9;
@@ -71,12 +71,12 @@ public class SudokuUtil {
         return target;
     }
 
-    public static void sudokuTest(int [][] target,int rowIndex,int colIndex,List<int[][]> source){
+    public static void sudokuTest(Integer[][] target,int rowIndex,int colIndex,List<Integer[][]> source){
         if (rowIndex == 9){
             source.add(target);
             return;
         }
-        int val = target[rowIndex][colIndex];
+        Integer val = target[rowIndex][colIndex];
         if (val > 0){
             sudokuTest(target,getNextRowIndex(rowIndex,colIndex),getNextColIndex(colIndex),source);
         }else{
@@ -85,7 +85,7 @@ public class SudokuUtil {
                 return;
             }
             for (Integer v : vals) {
-                int[][] copy = copy(target);
+                Integer[][] copy = copy(target);
                 copy[rowIndex][colIndex] = v;
                 sudokuTest(copy,getNextRowIndex(rowIndex,colIndex),getNextColIndex(colIndex),source);
                 if (source.size() > 1){
@@ -95,8 +95,8 @@ public class SudokuUtil {
         }
     }
 
-    public static int[][] copy(int[][] resouce){
-        int[][] target = new int[9][9];
+    public static Integer[][] copy(Integer[][] resouce){
+        Integer[][] target = createEmpty99();
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
                 target[i][j] = resouce[i][j];
@@ -116,7 +116,7 @@ public class SudokuUtil {
     static List<Integer> min = Arrays.asList(0,1,2);
     static List<Integer> mid = Arrays.asList(3,4,5);
     static List<Integer> max = Arrays.asList(6,7,8);
-    public static List<Integer> getVals(int [][] target,int rowIndex,int colIndex){
+    public static List<Integer> getVals(Integer [][] target,int rowIndex,int colIndex){
         List<Integer> vals = new ArrayList<>();
         for (int i = 0; i < 9; i++) {
             if (target[rowIndex][i]>0) {
@@ -160,21 +160,35 @@ public class SudokuUtil {
         System.out.println("----------------------");
     }
     
-    public static int[][] transf(int[] source){
-        int[][] target = new int[9][9];
+    public static Integer[][] transf(Integer[] source){
+        Integer[][] target = createEmpty99();
         for (int i = 0; i < 81; i++) {
             target[i/9][i%9] = source[i];
         }
         return target;
     }
     
-    public static int[] transf(int[][] source){
-        int[] target = new int[81];
+    public static Integer[] transf(Integer[][] source){
+        Integer[] target = createEmpty81();
         int c = 0;
-        for (int[] ints : source) {
-            for (int i : ints) {
+        for (Integer[] ints : source) {
+            for (Integer i : ints) {
                 target[c++] = i;
             }
+        }
+        return target;
+    }
+    
+    public static Integer[] createEmpty81(){
+        Integer[] target = new Integer[81];
+        Arrays.fill(target, 0);
+        return target;
+    }
+    
+    public static Integer[][] createEmpty99(){
+        Integer[][] target = new Integer[9][9];
+        for (int i = 0; i < target.length; i++) {
+            Arrays.fill(target[i], 0);
         }
         return target;
     }

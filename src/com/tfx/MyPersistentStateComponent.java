@@ -20,7 +20,7 @@ public class MyPersistentStateComponent implements PersistentStateComponent<Sudo
     
     static  MyPersistentStateComponent component;
 
-    SudokuMod sudokuMod;
+    SudokuMod sudokuMod = new SudokuMod();
     
     @Override
     public @Nullable SudokuMod getState() {
@@ -29,12 +29,22 @@ public class MyPersistentStateComponent implements PersistentStateComponent<Sudo
 
     @Override
     public void loadState(@NotNull SudokuMod sudokuMod) {
-        if (sudokuMod != null) {
-            this.sudokuMod = sudokuMod;
-        }
+        this.sudokuMod = sudokuMod;
     }
 
     public static MyPersistentStateComponent getInstance() {
         return ApplicationManager.getApplication().getService(MyPersistentStateComponent.class);
+    }
+    
+    public void setSudoku(Integer[] sudoku) {
+        sudokuMod.setSudoku(sudoku);
+    }
+
+    public void setResult(Integer[] result) {
+        sudokuMod.setResult(result);
+    }
+    
+    public void setHandle(Integer[] handle) {
+        sudokuMod.setHandle(handle);
     }
 }

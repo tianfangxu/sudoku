@@ -21,6 +21,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -225,10 +226,13 @@ public class MainUI implements ToolWindowFactory, DumbAware {
     private Runnable getSudokuRun(JPanel area,JBLabel msg){
         return ()->{
             try {
-                SudokuMod sudokuMod = new SudokuMod();
-                sudokuMod.setSudoku(SudokuUtil.create(40-this.jSlider.getValue()));
-                sudokuMod.setResult(SudokuUtil.getResult(SudokuUtil.transf(sudokuMod.getSudoku())));
-                MyPersistentStateComponent.getInstance().loadState(sudokuMod);
+                MyPersistentStateComponent stateComponent = MyPersistentStateComponent.getInstance();
+                Integer[] sudoku = SudokuUtil.create(40 - this.jSlider.getValue());
+                Integer[] result = SudokuUtil.getResult(SudokuUtil.transf(sudoku));
+                Integer[] handle = SudokuUtil.createEmpty81();
+                stateComponent.setSudoku(sudoku);
+                stateComponent.setResult(result);
+                stateComponent.setHandle(handle);
                 setVal(area);
                 msg.setSize(0,0);
                 area.repaint();
@@ -240,15 +244,15 @@ public class MainUI implements ToolWindowFactory, DumbAware {
     
     private void setVal(JPanel area){
         SudokuMod state = MyPersistentStateComponent.getInstance().getState();
-        int[] sudoku = state.getSudoku();
-        int[] handle = state.getHandle();
+        Integer[] sudoku = state.getSudoku();
+        Integer[] handle = state.getHandle();
         for (int i = 1; i <= 81; i++) {
             JButton component = (JButton)area.getComponent(i);
             component.setText("");
             component.setBackground(null);
             component.setEnabled(true);
             if (sudoku[i-1] == 0){
-                if (handle != null && handle[i-1] != 0){
+                if (handle != null && handle[i-1] > 0){
                     component.setText(String.valueOf(handle[i-1]));
                 }
                 continue;
@@ -258,8 +262,8 @@ public class MainUI implements ToolWindowFactory, DumbAware {
         }
     }
     
-    private int[] getVal(JPanel area){
-        int[] sudoku = new int[81];
+    private Integer[] getVal(JPanel area){
+        Integer[] sudoku = new Integer[81];
         for (int i = 1; i <= 81; i++) {
             JButton component = (JButton)area.getComponent(i);
             String text = component.getText();
@@ -314,7 +318,7 @@ public class MainUI implements ToolWindowFactory, DumbAware {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (MyPersistentStateComponent.getInstance().getState() != null && MyPersistentStateComponent.getInstance().getState().getResult() != null) {
-                    int[] ints = getVal(area);
+                    Integer[] ints = getVal(area);
                     int index = getIndex(area, textButton);
                     List<Integer> vals = SudokuUtil.getVals(SudokuUtil.transf(ints), index / 9, index % 9);
                     for (int i = 0; i < nums.size(); i++) {
@@ -387,7 +391,8 @@ public class MainUI implements ToolWindowFactory, DumbAware {
                         textButton.setBackground(null);
                         textButton.setFont(null);
                         numberKeyboard.dispose();
-                        MyPersistentStateComponent.getInstance().getState().setHandle(getVal(area));
+                        MyPersistentStateComponent stateComponent = MyPersistentStateComponent.getInstance();
+                        stateComponent.setHandle(getVal(area));
                     }
                 }
             });

@@ -1,5 +1,7 @@
 package com.tfx.mod;
 
+import com.tfx.utils.SudokuUtil;
+
 import java.io.Serializable;
 
 /**
@@ -8,33 +10,33 @@ import java.io.Serializable;
  */
 public class SudokuMod implements Serializable {
     
-    public int[] sudoku;
+    public Integer[] sudoku = SudokuUtil.createEmpty81();
 
-    public int[] result;
+    public Integer[] result = SudokuUtil.createEmpty81();
 
-    public int[] handle;
+    public Integer[] handle = SudokuUtil.createEmpty81();
 
-    public int[] getSudoku() {
+    public Integer[] getSudoku() {
         return sudoku;
     }
 
-    public void setSudoku(int[] sudoku) {
+    public void setSudoku(Integer[] sudoku) {
         this.sudoku = sudoku;
     }
 
-    public int[] getResult() {
+    public Integer[] getResult() {
         return result;
     }
 
-    public void setResult(int[] result) {
+    public void setResult(Integer[] result) {
         this.result = result;
     }
 
-    public int[] getHandle() {
+    public Integer[] getHandle() {
         return handle;
     }
 
-    public void setHandle(int[] handle) {
+    public void setHandle(Integer[] handle) {
         this.handle = handle;
     }
 }
