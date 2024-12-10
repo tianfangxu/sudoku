@@ -2,7 +2,6 @@ package com.tfx;
 
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.popup.IconButton;
 import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.wm.ToolWindow;
@@ -240,13 +239,18 @@ public class MainUI implements ToolWindowFactory, DumbAware {
     }
     
     private void setVal(JPanel area){
-        int[] sudoku = MyPersistentStateComponent.getInstance().getState().getSudoku();
+        SudokuMod state = MyPersistentStateComponent.getInstance().getState();
+        int[] sudoku = state.getSudoku();
+        int[] handle = state.getHandle();
         for (int i = 1; i <= 81; i++) {
             JButton component = (JButton)area.getComponent(i);
             component.setText("");
             component.setBackground(null);
             component.setEnabled(true);
             if (sudoku[i-1] == 0){
+                if (handle != null && handle[i-1] != 0){
+                    component.setText(String.valueOf(handle[i-1]));
+                }
                 continue;
             }
             component.setText(String.valueOf(sudoku[i-1]));
@@ -383,6 +387,7 @@ public class MainUI implements ToolWindowFactory, DumbAware {
                         textButton.setBackground(null);
                         textButton.setFont(null);
                         numberKeyboard.dispose();
+                        MyPersistentStateComponent.getInstance().getState().setHandle(getVal(area));
                     }
                 }
             });

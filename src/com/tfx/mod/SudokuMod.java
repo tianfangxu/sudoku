@@ -11,6 +11,8 @@ public class SudokuMod implements Serializable {
     private int[] sudoku;
     
     private int[] result;
+    
+    private int[] handle;
 
     public int[] getSudoku() {
         return sudoku;
@@ -26,5 +28,13 @@ public class SudokuMod implements Serializable {
 
     public void setResult(int[] result) {
         this.result = result;
+    }
+
+    public int[] getHandle() {
+        return handle;
+    }
+
+    public void setHandle(int[] handle) {
+        this.handle = handle;
     }
 }

@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.tfx.sudoku</id>
   <name>Sudoku T</name>
-  <version>1.03</version>
+  <version>1.04</version>
   <vendor email="15755502377@163.com" url="15755502377@163.com">tianfangxu</vendor>
 
   <description><![CDATA[ 
@@ -16,6 +16,7 @@
       v1.01 Fixed initialized number, non adjustable<br>
       v1.02 you can customize the mode operation<br>
       v1.03 Add a prompt after verifying the results, The way to adjust the prompt is not to directly prompt the correct answer, but to prompt based on the current operation data<br>
+      v1.04 Initialize the answers already filled in by the user<br>
     ]]>
   </change-notes>
 
