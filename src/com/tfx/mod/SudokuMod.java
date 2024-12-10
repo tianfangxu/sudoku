@@ -8,11 +8,11 @@ import java.io.Serializable;
  */
 public class SudokuMod implements Serializable {
     
-    private int[] sudoku;
-    
-    private int[] result;
-    
-    private int[] handle;
+    public int[] sudoku;
+
+    public int[] result;
+
+    public int[] handle;
 
     public int[] getSudoku() {
         return sudoku;
