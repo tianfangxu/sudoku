@@ -208,18 +208,22 @@ public class MainUI implements ToolWindowFactory, DumbAware {
                         Point location = button.getLocationOnScreen();
                         getJBPopupKeyboard(button, finalNumIndex).showInScreenCoordinates(button, new Point(location.x, location.y + button.getHeight() + 25));
                     }
-                    String text = button.getText();
-                    for (TButton tButton : buttonList) {
-                        if (text != null && text.length() == 1 && Objects.equals(tButton.getText(),text)){
-                            tButton.setBackground(JBColor.ORANGE);
-                        }else{
-                            tButton.setBackground(null);
-                        }
-                    }
-                    
+                    setHighlight(button.getText());
                 }
             });
         }
+    }
+    
+    public void setHighlight(String text){
+        for (int i = 1; i <= 81; i++) {
+            TButton tButton = (TButton)area.getComponent(i);
+            if (text != null && text.length() == 1 && Objects.equals(tButton.getText(),text)){
+                tButton.setBackground(JBColor.ORANGE);
+            }else{
+                tButton.setBackground(null);
+            }
+        }
+        area.repaint();
     }
 
     private ActionListener getCreateSudokuPanel(JPanel area,JBLabel msg) {
@@ -400,15 +404,17 @@ public class MainUI implements ToolWindowFactory, DumbAware {
             nums.get(i).addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    String text = String.valueOf(finalI);
                     if (textButton.isMark()) {
-                        textButton.setText(htmlText(textButton.getText(),String.valueOf(finalI)));
+                        textButton.setText(htmlText(textButton.getText(), text));
                     }else{
-                        textButton.setText(String.valueOf(finalI));
+                        textButton.setText(text);
                         textButton.setBackground(null);
                         textButton.setFont(null);
                         numberKeyboard.dispose();
                         MyPersistentStateComponent stateComponent = MyPersistentStateComponent.getInstance();
                         stateComponent.setHandle(getVal(area));
+                        setHighlight(text);
                     }
                 }
             });
