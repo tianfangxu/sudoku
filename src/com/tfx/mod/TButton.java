@@ -58,11 +58,24 @@ public class TButton extends JButton {
      */
     private boolean mark = false;
 
+    /**
+     * 编辑
+     */
+    private boolean edit = true;
+
     public boolean isMark() {
         return mark;
     }
 
     public void setMark(boolean mark) {
         this.mark = mark;
+    }
+
+    public boolean isEdit() {
+        return edit;
+    }
+
+    public void setEdit(boolean edit) {
+        this.edit = edit;
     }
 }

@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author tianfx
@@ -172,6 +173,7 @@ public class MainUI implements ToolWindowFactory, DumbAware {
     private void setAreas(JPanel area) {
         int x = 3;
         int y = 0;
+        List<TButton> buttonList = new ArrayList<>();
         for (int i = 1; i <= 81; i++) {
             TButton button = new TButton("");
             button.setLocation(x,y);
@@ -188,21 +190,35 @@ public class MainUI implements ToolWindowFactory, DumbAware {
             if (i%27 == 0){
                 y+=3;
             }
-            
-            int numIndex = i-1;
-            button.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    // 获取按钮的位置，设置数字键盘显示在按钮下方
-                    Point location = button.getLocationOnScreen();
-                    getJBPopupKeyboard(button, numIndex).showInScreenCoordinates(button, new Point(location.x, location.y + button.getHeight()+25));
-                }
-            });
+            buttonList.add(button);
             area.add(button);
         }
         SudokuMod sudokuMod = MyPersistentStateComponent.getInstance().getState();
         if (sudokuMod != null && sudokuMod.getSudoku() != null) {
             setVal(area);
+        }
+        for (int numIndex = 0; numIndex < buttonList.size(); numIndex++) {
+            TButton button = buttonList.get(numIndex);
+            int finalNumIndex = numIndex;
+            button.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (button.isEdit()) {
+                        // 获取按钮的位置，设置数字键盘显示在按钮下方
+                        Point location = button.getLocationOnScreen();
+                        getJBPopupKeyboard(button, finalNumIndex).showInScreenCoordinates(button, new Point(location.x, location.y + button.getHeight() + 25));
+                    }
+                    String text = button.getText();
+                    for (TButton tButton : buttonList) {
+                        if (text != null && text.length() == 1 && Objects.equals(tButton.getText(),text)){
+                            tButton.setBackground(JBColor.ORANGE);
+                        }else{
+                            tButton.setBackground(null);
+                        }
+                    }
+                    
+                }
+            });
         }
     }
 
@@ -247,10 +263,10 @@ public class MainUI implements ToolWindowFactory, DumbAware {
         Integer[] sudoku = state.getSudoku();
         Integer[] handle = state.getHandle();
         for (int i = 1; i <= 81; i++) {
-            JButton component = (JButton)area.getComponent(i);
+            TButton component = (TButton)area.getComponent(i);
             component.setText("");
             component.setBackground(null);
-            component.setEnabled(true);
+            component.setEdit(true);
             if (sudoku[i-1] == 0){
                 if (handle != null && handle[i-1] > 0){
                     component.setText(String.valueOf(handle[i-1]));
@@ -258,7 +274,7 @@ public class MainUI implements ToolWindowFactory, DumbAware {
                 continue;
             }
             component.setText(String.valueOf(sudoku[i-1]));
-            component.setEnabled(false);
+            component.setEdit(false);
         }
     }
     

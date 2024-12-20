@@ -33,7 +33,11 @@ public class MyPersistentStateComponent implements PersistentStateComponent<Sudo
     }
 
     public static MyPersistentStateComponent getInstance() {
-        return ApplicationManager.getApplication().getService(MyPersistentStateComponent.class);
+        try {
+            return ApplicationManager.getApplication().getService(MyPersistentStateComponent.class);
+        }catch (Exception e){
+            return component==null?(component = new MyPersistentStateComponent()):component;
+        }
     }
     
     public void setSudoku(Integer[] sudoku) {
