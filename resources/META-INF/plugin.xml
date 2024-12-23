@@ -1,15 +1,37 @@
 <idea-plugin>
   <id>com.tfx.sudoku</id>
   <name>Sudoku T</name>
-  <version>1.05</version>
+  <version>1.06</version>
   <vendor email="15755502377@163.com" url="15755502377@163.com">tianfangxu</vendor>
 
   <description><![CDATA[ 
-  This is a Sudoku generator, you can play it. The content includes generating Sudoku, 
-  filling in the correct numbers, verifying the filled in numbers, and prompting you<br>
-  The marking function allows multiple possible numbers to be filled in the current grid<br>
-  The prompt function is to directly fill in the correct answer in the current grid<br>
-  <em>ips:If you have any questions, please feel free to contact us：15755502377@163.com)</em> ]]></description>
+  <div>
+    Sudoku is a logic-based, combinatorial number-placement puzzle. The objective is to fill a  9 × 9 grid with digits so that each column, each row, and each of the nine   3 × 3  subgrids (known as "boxes" or "regions") contain all the digits from 1 to 9. The puzzle setter provides a partially completed grid, which has a unique solution.
+  </div>
+  <div>
+    <b>1.Structure:</b>
+    <div>
+      The grid is divided into 81 cells, arranged in 9 rows and 9 columns. The 9 subgrids each have a 3 × 3  configuration.
+    </div>
+    <b>2.Rules:</b>
+    <div>
+      Each digit from 1 to 9 must appear exactly once in every row, column, and subgrid. No cell can contain a number that violates these conditions.
+    </div>
+  <div>
+  <div>
+    数独是一种基于逻辑的组合数字布局谜题。目标是用数字填充一个9×9的网格，使每一列、每一行和九个3×3子网格中的每一个都包含从1到9的所有数字。拼图设置器提供了一个部分完成的网格，它有一个独特的解决方案。
+  </div>
+  <div>
+    <b>1.结构：</b>
+    <div>
+      网格分为81个单元格，排列成9行9列。9个子网格每个都有3×3的配置
+    </div>
+    <b>2.规则：</b>
+    <div>
+      从1到9的每个数字必须在每一行、每一列和每一个子网格中恰好出现一次。任何单元格都不能包含违反这些条件的数字
+    </div>
+  <div>
+]]></description>
 
   <change-notes><![CDATA[
       v1.00 Create a random Sudoku with moderate difficulty. And it can mark the answers you are unsure about.<br>
